@@ -1,8 +1,14 @@
-
 ###> symfony/framework-bundle ###
+# Fichiers d'environnement
+.env
+.env.*
+!.env.example
+
+# Fichiers locaux
 /.env.local
 /.env.local.php
 /.env.*.local
+
 /config/secrets/prod/prod.decrypt.private.php
 /public/bundles/
 /var/
@@ -23,3 +29,27 @@
 /public/assets/
 /assets/vendor/
 ###< symfony/asset-mapper ###
+
+# Fichiers système
+.DS_Store
+Thumbs.db
+
+# Fichiers d'IDE
+/.idea/
+/.vscode/
+*.sublime-workspace
+*.sublime-project
+
+# Logs et bases de données
+*.log
+*.sqlite
+
+# Composer
+composer.phar
+/vendor/
+composer.lock
+
+# Node modules
+/node_modules/
+package-lock.json
+yarn.lock
