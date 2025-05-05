@@ -1,0 +1,15 @@
+{{ form_start(form, {'attr': {'class': 'comment-form'}}) }}
+    <div class="form-group mb-4">
+        {{ form_widget(form, {
+            'attr': {
+                'class': 'form-control',
+                'placeholder': 'Écrivez votre commentaire ici...',
+                'rows': 5
+            }
+        }) }}
+    </div>
+    <button class="btn btn-gradient">
+        <i class="fas fa-{{ button_label|default('save')|lower }} me-2"></i>
+        {{ button_label|default('Enregistrer') }}
+    </button>
+{{ form_end(form) }}

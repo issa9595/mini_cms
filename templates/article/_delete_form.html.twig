@@ -1,0 +1,109 @@
+{% block stylesheets %}
+<style>
+    .toast-container {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        z-index: 9999;
+    }
+
+    .confirmation-toast {
+        background: white;
+        border-radius: 1rem;
+        overflow: hidden;
+        border: none;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        min-width: 300px;
+    }
+
+    .confirmation-toast .toast-header {
+        background: var(--primary-gradient);
+        color: white;
+        border: none;
+        padding: 1rem;
+    }
+
+    .confirmation-toast .toast-body {
+        padding: 1rem;
+    }
+
+    .toast-actions {
+        display: flex;
+        gap: 0.5rem;
+        margin-top: 1rem;
+    }
+
+    .toast-actions .btn {
+        flex: 1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+    }
+</style>
+{% endblock %}
+
+<div class="toast-container"></div>
+
+<form method="post" 
+      action="{{ path('app_article_delete', {'id': article.id}) }}" 
+      class="delete-form"
+      onsubmit="return false;">
+    <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ article.id) }}">
+    <button type="button" class="btn btn-danger" onclick="showDeleteConfirmation(this)">
+        <i class="fas fa-trash-alt"></i>
+        Supprimer
+    </button>
+</form>
+
+<script>
+function showDeleteConfirmation(button) {
+    // Créer le toast
+    const toastHtml = `
+        <div class="toast confirmation-toast" role="alert" aria-live="assertive" aria-atomic="true">
+            <div class="toast-header">
+                <i class="fas fa-exclamation-triangle me-2"></i>
+                <strong class="me-auto">Confirmation</strong>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast" aria-label="Close"></button>
+            </div>
+            <div class="toast-body">
+                <p class="mb-3">Êtes-vous sûr de vouloir supprimer cet article ?</p>
+                <div class="toast-actions">
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="toast">
+                        <i class="fas fa-times"></i>
+                        Annuler
+                    </button>
+                    <button type="button" class="btn btn-danger" onclick="confirmDelete(this)">
+                        <i class="fas fa-trash-alt"></i>
+                        Supprimer
+                    </button>
+                </div>
+            </div>
+        </div>
+    `;
+
+    // Ajouter le toast au conteneur
+    const container = document.querySelector('.toast-container');
+    container.innerHTML = toastHtml;
+
+    // Initialiser et afficher le toast
+    const toastElement = container.querySelector('.toast');
+    const toast = new bootstrap.Toast(toastElement, {
+        autohide: false
+    });
+    toast.show();
+
+    // Stocker le formulaire pour la confirmation
+    toastElement.closest('.toast').dataset.form = button.closest('form').outerHTML;
+}
+
+function confirmDelete(button) {
+    const toast = button.closest('.toast');
+    const formHtml = toast.dataset.form;
+    const tempDiv = document.createElement('div');
+    tempDiv.innerHTML = formHtml;
+    const form = tempDiv.firstElementChild;
+    document.body.appendChild(form);
+    form.submit();
+}
+</script>

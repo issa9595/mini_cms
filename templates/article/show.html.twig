@@ -1,0 +1,289 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ article.title }}{% endblock %}
+
+{% block stylesheets %}
+<style>
+    /* En-tête standardisé */
+    .page-header {
+        background: var(--primary-gradient);
+        color: white;
+        padding: 4rem 0;
+        margin-bottom: 3rem;
+        border-radius: 0 0 2rem 2rem;
+        position: relative;
+        text-align: center;
+    }
+
+    .page-header::after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        height: 50%;
+        background: linear-gradient(to top, rgba(0,0,0,0.1), transparent);
+        border-radius: 0 0 2rem 2rem;
+    }
+
+    .page-header .container {
+        position: relative;
+        z-index: 1;
+    }
+
+    .article-meta {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 2rem;
+        color: rgba(255, 255, 255, 0.9);
+        margin-top: 1.5rem;
+    }
+
+    .article-meta-item {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .article-meta-item i {
+        opacity: 0.8;
+    }
+
+    /* Contenu de l'article */
+    .article-content {
+        background: white;
+        border-radius: 1.5rem;
+        padding: 2.5rem;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        font-size: 1.1rem;
+        line-height: 1.8;
+        margin-bottom: 2rem;
+        color: #2c3e50;
+    }
+
+    /* Actions standardisées */
+    .article-actions {
+        background: white;
+        border-radius: 1.5rem;
+        padding: 1.5rem;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 3rem;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    }
+
+    .article-actions .btn-group {
+        display: flex;
+        gap: 1rem;
+    }
+
+    .article-actions .btn {
+        transition: all 0.3s ease;
+    }
+
+    .article-actions .btn:hover {
+        transform: translateY(-2px);
+    }
+
+    /* Section commentaires */
+    .comments-section {
+        background: white;
+        border-radius: 1.5rem;
+        padding: 2rem;
+        margin-bottom: 3rem;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    }
+
+    .comments-header {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        margin-bottom: 2rem;
+        padding-bottom: 1rem;
+        border-bottom: 1px solid rgba(0,0,0,0.05);
+    }
+
+    .comment-card {
+        background: #f8f9fa;
+        border-radius: 1rem;
+        padding: 1.5rem;
+        margin-bottom: 1.5rem;
+        transition: all 0.3s ease;
+        border: 1px solid rgba(0,0,0,0.05);
+    }
+
+    .comment-card:hover {
+        transform: translateX(5px);
+        box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    }
+
+    .comment-header {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        margin-bottom: 1rem;
+    }
+
+    .comment-author {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .comment-avatar {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background: var(--primary-gradient);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+    }
+
+    .comment-content {
+        color: #2c3e50;
+        line-height: 1.6;
+    }
+
+    .add-comment-section {
+        background: white;
+        border-radius: 1rem;
+        padding: 2rem;
+        margin-top: 2rem;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    }
+
+    .comment-form textarea {
+        border-radius: 1rem;
+        padding: 1rem;
+        min-height: 120px;
+        resize: vertical;
+    }
+
+    .login-prompt {
+        text-align: center;
+        padding: 3rem;
+        background: #f8f9fa;
+        border-radius: 1rem;
+        margin-top: 2rem;
+    }
+</style>
+{% endblock %}
+
+{% block body %}
+    <div class="page-header">
+        <div class="container">
+            <h1 class="display-4">{{ article.title }}</h1>
+            <div class="article-meta">
+                <div class="article-meta-item">
+                    <i class="fas fa-user"></i>
+                    {{ article.author.email }}
+                </div>
+                <div class="article-meta-item">
+                    <i class="fas fa-calendar"></i>
+                    {{ article.createdAt|date('d/m/Y H:i') }}
+                </div>
+                <div class="article-meta-item">
+                    <i class="fas fa-heart"></i>
+                    {{ article.likes|length }} likes
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="article-content">
+            {{ article.content|nl2br }}
+        </div>
+
+        <div class="article-actions">
+            <div class="btn-group">
+                <a href="{{ path('app_article_index') }}" class="btn btn-outline-gradient">
+                    <i class="fas fa-arrow-left me-2"></i>Retour
+                </a>
+                {% if is_granted('ROLE_ADMIN') or app.user == article.author %}
+                    <a href="{{ path('app_article_edit', {'id': article.id}) }}" class="btn btn-outline-gradient">
+                        <i class="fas fa-edit me-2"></i>Modifier
+                    </a>
+                    {{ include('article/_delete_form.html.twig') }}
+                {% endif %}
+            </div>
+
+            {% if is_granted('IS_AUTHENTICATED_FULLY') %}
+                <form action="{{ path('app_article_like', { id: article.id }) }}" method="post" class="d-inline">
+                    <button type="submit" class="btn btn-gradient like-button">
+                        <span class="like-count">
+                            <i class="fas fa-heart"></i>
+                            {{ article.likes|length }} like{{ article.likes|length == 1 ? '' : 's' }}
+                        </span>
+                    </button>
+                </form>
+            {% else %}
+                <a href="{{ path('app_login') }}" class="btn btn-gradient">
+                    <i class="fas fa-sign-in-alt me-2"></i>Connexion pour liker
+                </a>
+            {% endif %}
+        </div>
+
+        <div class="comments-section">
+            <div class="comments-header">
+                <i class="fas fa-comments fa-2x text-primary"></i>
+                <h2 class="h3 mb-0">Commentaires ({{ comments|length }})</h2>
+            </div>
+
+            {% for comment in comments %}
+                <div class="comment-card">
+                    <div class="comment-header">
+                        <div class="comment-author">
+                            <div class="comment-avatar">
+                                <i class="fas fa-user"></i>
+                            </div>
+                            <strong>{{ comment.author.email }}</strong>
+                        </div>
+                        <small class="text-muted">{{ comment.createdAt|date('d/m/Y H:i') }}</small>
+                    </div>
+                    <div class="comment-content">
+                        {{ comment.content|nl2br }}
+                    </div>
+                </div>
+            {% else %}
+                <div class="text-center text-muted py-4">
+                    <i class="fas fa-comment-slash fa-3x mb-3"></i>
+                    <p class="mb-0">Aucun commentaire pour le moment. Soyez le premier à réagir !</p>
+                </div>
+            {% endfor %}
+
+            {% if is_granted('IS_AUTHENTICATED_FULLY') %}
+                <div class="add-comment-section">
+                    <h3 class="h4 mb-4">
+                        <i class="fas fa-paper-plane me-2"></i>
+                        Ajouter un commentaire
+                    </h3>
+                    {{ form_start(form, {'attr': {'class': 'comment-form'}}) }}
+                        {{ form_widget(form, {
+                            'attr': {
+                                'class': 'form-control',
+                                'placeholder': 'Partagez votre avis...'
+                            }
+                        }) }}
+                        <button class="btn btn-gradient mt-3">
+                            Publier le commentaire
+                        </button>
+                    {{ form_end(form) }}
+                </div>
+            {% else %}
+                <div class="login-prompt">
+                    <i class="fas fa-lock fa-3x text-muted mb-3"></i>
+                    <h3 class="h4">Envie de participer à la discussion ?</h3>
+                    <p class="text-muted mb-4">Connectez-vous pour partager votre avis</p>
+                    <a href="{{ path('app_login') }}" class="btn btn-gradient">
+                        <i class="fas fa-sign-in-alt me-2"></i>Se connecter
+                    </a>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+{% endblock %}

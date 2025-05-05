@@ -1,0 +1,51 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Nouvel Article{% endblock %}
+
+{% block stylesheets %}
+<style>
+    .create-article-header {
+        background: var(--primary-gradient);
+        color: white;
+        padding: 2rem 0;
+        margin-bottom: 2rem;
+        border-radius: 1rem;
+    }
+    .form-container {
+        background: white;
+        border-radius: 1rem;
+        padding: 2rem;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    }
+    .form-container label {
+        font-weight: 500;
+        margin-bottom: 0.5rem;
+    }
+    .form-container textarea {
+        min-height: 200px;
+    }
+</style>
+{% endblock %}
+
+{% block body %}
+    <div class="container">
+        <div class="create-article-header text-center">
+            <h1 class="display-4 mb-3">Créer un nouvel article</h1>
+            <p class="lead">Partagez vos idées avec la communauté</p>
+        </div>
+
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <div class="form-container">
+                    {{ include('article/_form.html.twig') }}
+
+                    <div class="mt-4 text-center">
+                        <a href="{{ path('app_article_index') }}" class="btn btn-outline-gradient">
+                            <i class="fas fa-arrow-left me-2"></i>Retour à la liste
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

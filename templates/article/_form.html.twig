@@ -1,0 +1,27 @@
+{{ form_start(form) }}
+    <div class="mb-4">
+        {{ form_label(form.title, 'Titre de l\'article', {'label_attr': {'class': 'form-label'}}) }}
+        {{ form_widget(form.title, {'attr': {
+            'class': 'form-control',
+            'placeholder': 'Entrez le titre de votre article'
+        }}) }}
+        {{ form_errors(form.title) }}
+    </div>
+
+    <div class="mb-4">
+        {{ form_label(form.content, 'Contenu', {'label_attr': {'class': 'form-label'}}) }}
+        {{ form_widget(form.content, {'attr': {
+            'class': 'form-control',
+            'placeholder': 'Rédigez votre article ici...',
+            'rows': 10
+        }}) }}
+        {{ form_errors(form.content) }}
+    </div>
+
+    <div class="text-center">
+        <button class="btn btn-gradient">
+            <i class="fas fa-paper-plane me-2"></i>
+            {{ button_label|default('Publier l\'article') }}
+        </button>
+    </div>
+{{ form_end(form) }}

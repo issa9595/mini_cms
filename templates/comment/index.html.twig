@@ -1,0 +1,210 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Liste des commentaires{% endblock %}
+
+{% block stylesheets %}
+<style>
+    /* En-tête standardisé */
+    .page-header {
+        background: var(--primary-gradient);
+        color: white;
+        padding: 4rem 0;
+        margin-bottom: 3rem;
+        border-radius: 0 0 2rem 2rem;
+        position: relative;
+        text-align: center;
+    }
+
+    .page-header::after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        height: 50%;
+        background: linear-gradient(to top, rgba(0,0,0,0.1), transparent);
+        border-radius: 0 0 2rem 2rem;
+    }
+
+    .page-header .container {
+        position: relative;
+        z-index: 1;
+    }
+
+    /* Carte de commentaire */
+    .comment-card {
+        background: white;
+        border-radius: 1.5rem;
+        overflow: hidden;
+        transition: all 0.3s ease;
+        height: 100%;
+        position: relative;
+        border: none;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    }
+
+    .comment-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+    }
+
+    .comment-content {
+        position: relative;
+        color: #2c3e50;
+        line-height: 1.6;
+        margin-bottom: 0.5rem;
+    }
+
+    /* Style pour les visiteurs non connectés */
+    .visitor .comment-content {
+        max-height: 100px;
+        overflow: hidden;
+    }
+
+    .visitor .comment-content::after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        height: 24px;
+        background: linear-gradient(transparent 0%, white 90%);
+        opacity: 0.9;
+    }
+
+    .comment-meta {
+        font-size: 0.9rem;
+        color: #6c757d;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        margin-bottom: 1rem;
+    }
+
+    .comment-meta i {
+        color: var(--primary-color);
+        opacity: 0.8;
+    }
+
+    .comment-actions {
+        display: flex;
+        gap: 0.5rem;
+        margin-top: 1rem;
+        padding-top: 1rem;
+        border-top: 1px solid rgba(0,0,0,0.05);
+    }
+
+    .comment-actions .btn {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        transition: all 0.3s ease;
+    }
+
+    .comment-actions .btn:hover {
+        transform: translateY(-2px);
+    }
+
+    /* Bouton de création flottant */
+    .create-comment-btn {
+        position: fixed;
+        bottom: 2rem;
+        right: 2rem;
+        z-index: 1000;
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        background: var(--primary-gradient);
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        transition: all 0.3s ease;
+    }
+
+    .create-comment-btn:hover {
+        transform: scale(1.1);
+        color: white;
+    }
+
+    /* État vide */
+    .empty-state {
+        text-align: center;
+        padding: 4rem 2rem;
+        background: white;
+        border-radius: 1.5rem;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    }
+
+    .empty-state i {
+        font-size: 4rem;
+        color: #dee2e6;
+        margin-bottom: 1.5rem;
+    }
+
+    .empty-state h3 {
+        color: #2c3e50;
+        margin-bottom: 1rem;
+    }
+
+    .empty-state p {
+        color: #6c757d;
+    }
+</style>
+{% endblock %}
+
+{% block body %}
+    <div class="page-header">
+        <div class="container">
+            <h1 class="display-4">Commentaires</h1>
+            <p class="lead">Gérez les commentaires du site</p>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="row g-4">
+            {% for comment in comments %}
+                <div class="col-md-6 col-lg-4 {% if not is_granted('IS_AUTHENTICATED_FULLY') %}visitor{% endif %}">
+                    <div class="card comment-card">
+                        <div class="card-body">
+                            <div class="comment-meta">
+                                <i class="fas fa-calendar-alt"></i>
+                                {{ comment.createdAt ? comment.createdAt|date('d/m/Y à H:i') : 'Date non disponible' }}
+                            </div>
+                            <div class="comment-content mb-3">
+                                {{ comment.content|nl2br }}
+                            </div>
+                            <div class="comment-actions">
+                                <a href="{{ path('app_comment_show', {'id': comment.id}) }}" 
+                                   class="btn btn-gradient">
+                                    <i class="fas fa-eye"></i>
+                                    Voir
+                                </a>
+                                {% if is_granted('ROLE_ADMIN') or app.user == comment.author %}
+                                    <a href="{{ path('app_comment_edit', {'id': comment.id}) }}" 
+                                       class="btn btn-outline-gradient">
+                                        <i class="fas fa-edit"></i>
+                                        Éditer
+                                    </a>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% else %}
+                <div class="col-12">
+                    <div class="empty-state">
+                        <i class="fas fa-comments"></i>
+                        <h3>Aucun commentaire trouvé</h3>
+                        <p>Les commentaires apparaîtront ici une fois créés.</p>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+
+        <a href="{{ path('app_comment_new') }}" class="create-comment-btn" title="Créer un nouveau commentaire">
+            <i class="fas fa-plus"></i>
+        </a>
+    </div>
+{% endblock %}

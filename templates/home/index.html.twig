@@ -1,0 +1,86 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Accueil{% endblock %}
+
+{% block stylesheets %}
+<style>
+    .articles-header {
+        background: linear-gradient(135deg, #3498db, #2ecc71);
+        color: white;
+        padding: 3rem 0;
+        margin-bottom: 2rem;
+        border-radius: 0 0 1rem 1rem;
+    }
+    .article-card {
+        transition: transform 0.2s, box-shadow 0.2s;
+        margin-bottom: 1.5rem;
+    }
+    .article-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    }
+    .article-author {
+        font-size: 0.9rem;
+        color: #666;
+    }
+    .empty-state {
+        text-align: center;
+        padding: 3rem;
+        background: #f8f9fa;
+        border-radius: 1rem;
+        margin: 2rem 0;
+    }
+    .empty-state i {
+        font-size: 3rem;
+        color: #dee2e6;
+        margin-bottom: 1rem;
+    }
+</style>
+{% endblock %}
+
+{% block body %}
+    <div class="articles-header text-center">
+        <div class="container">
+            <h1 class="display-4 mb-3">Articles publiés</h1>
+            <p class="lead">Découvrez les derniers articles de notre communauté</p>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="row">
+            {% if articles|length > 0 %}
+                {% for article in articles %}
+                    <div class="col-md-6 col-lg-4">
+                        <div class="card article-card h-100">
+                            <div class="card-body">
+                                <h5 class="card-title">
+                                    <a href="{{ path('app_article_show', { id: article.id }) }}" class="text-decoration-none text-dark">
+                                        {{ article.title }}
+                                    </a>
+                                </h5>
+                                <p class="article-author mt-2 mb-0">
+                                    <i class="fas fa-user-edit me-1"></i>
+                                    Publié par {{ article.author.email }}
+                                </p>
+                            </div>
+                            <div class="card-footer bg-white border-top-0">
+                                <a href="{{ path('app_article_show', { id: article.id }) }}" class="btn btn-outline-primary btn-sm">
+                                    Lire l'article
+                                    <i class="fas fa-arrow-right ms-1"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            {% else %}
+                <div class="col-12">
+                    <div class="empty-state">
+                        <i class="fas fa-newspaper mb-3"></i>
+                        <h3>Aucun article disponible</h3>
+                        <p class="text-muted">Soyez le premier à publier un article !</p>
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+{% endblock %}

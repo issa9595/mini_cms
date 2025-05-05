@@ -1,0 +1,108 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Modifier le commentaire{% endblock %}
+
+{% block stylesheets %}
+<style>
+    /* En-tête standardisé */
+    .page-header {
+        background: var(--primary-gradient);
+        color: white;
+        padding: 4rem 0;
+        margin-bottom: 3rem;
+        border-radius: 0 0 2rem 2rem;
+        position: relative;
+        text-align: center;
+    }
+
+    .page-header::after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        height: 50%;
+        background: linear-gradient(to top, rgba(0,0,0,0.1), transparent);
+        border-radius: 0 0 2rem 2rem;
+    }
+
+    .page-header .container {
+        position: relative;
+        z-index: 1;
+    }
+
+    /* Conteneur du formulaire */
+    .form-container {
+        background: white;
+        border-radius: 1.5rem;
+        padding: 2.5rem;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        margin-bottom: 2rem;
+    }
+
+    /* Barre d'actions */
+    .actions-bar {
+        background: white;
+        border-radius: 1.5rem;
+        padding: 1.5rem;
+        margin-bottom: 3rem;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+    }
+
+    .actions-bar .btn {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        transition: all 0.3s ease;
+    }
+
+    .actions-bar .btn:hover {
+        transform: translateY(-2px);
+    }
+
+    /* Style pour le formulaire de suppression */
+    .delete-form button {
+        background: none;
+        border: none;
+        color: #dc3545;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.5rem 1rem;
+        border-radius: 0.5rem;
+        transition: all 0.3s ease;
+    }
+
+    .delete-form button:hover {
+        background: #dc3545;
+        color: white;
+        transform: translateY(-2px);
+    }
+</style>
+{% endblock %}
+
+{% block body %}
+    <div class="page-header">
+        <div class="container">
+            <h1 class="display-4">Modifier le commentaire</h1>
+            <p class="lead">Apportez vos modifications au commentaire</p>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="form-container">
+            {{ include('comment/_form.html.twig', {'button_label': 'Mettre à jour'}) }}
+        </div>
+
+        <div class="actions-bar">
+            <a href="{{ path('app_comment_index') }}" class="btn btn-outline-gradient">
+                <i class="fas fa-arrow-left"></i>
+                Retour à la liste
+            </a>
+            {{ include('comment/_delete_form.html.twig') }}
+        </div>
+    </div>
+{% endblock %}

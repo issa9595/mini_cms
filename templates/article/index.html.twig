@@ -1,0 +1,231 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Articles{% endblock %}
+
+{% block stylesheets %}
+<style>
+    /* En-tête standardisé */
+    .page-header {
+        background: var(--primary-gradient);
+        color: white;
+        padding: 4rem 0;
+        margin-bottom: 3rem;
+        border-radius: 0 0 2rem 2rem;
+        text-align: center;
+        position: relative;
+    }
+
+    .page-header::after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        height: 50%;
+        background: linear-gradient(to top, rgba(0,0,0,0.1), transparent);
+        border-radius: 0 0 2rem 2rem;
+    }
+
+    .page-header .container {
+        position: relative;
+        z-index: 1;
+    }
+
+    /* Styles de carte standardisés */
+    .article-card {
+        background: white;
+        border-radius: 1.5rem;
+        overflow: hidden;
+        transition: all 0.3s ease;
+        height: 100%;
+        position: relative;
+        border: none;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    }
+
+    .article-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+    }
+
+    .article-card .card-img-top {
+        height: 200px;
+        background: var(--primary-gradient);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 3rem;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .article-card .card-img-top::after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        height: 30%;
+        background: linear-gradient(to top, rgba(0,0,0,0.2), transparent);
+    }
+
+    .article-meta {
+        font-size: 0.9rem;
+        color: #6c757d;
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        margin: 1rem 0;
+    }
+
+    .article-meta i {
+        color: var(--primary-color);
+        opacity: 0.8;
+    }
+
+    .article-title {
+        font-size: 1.4rem;
+        font-weight: 600;
+        margin-bottom: 1rem;
+        color: #2c3e50;
+        line-height: 1.3;
+    }
+
+    .article-preview {
+        color: #6c757d;
+        margin-bottom: 1.5rem;
+        display: -webkit-box;
+        -webkit-line-clamp: 3;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+        line-height: 1.6;
+    }
+
+    .article-actions {
+        display: flex;
+        gap: 0.5rem;
+        margin-top: auto;
+        padding-top: 1rem;
+        border-top: 1px solid rgba(0,0,0,0.05);
+    }
+
+    .article-actions .btn {
+        padding: 0.5rem 1rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        transition: all 0.3s ease;
+    }
+
+    .article-actions .btn:hover {
+        transform: translateY(-2px);
+    }
+
+    .create-article-btn {
+        position: fixed;
+        bottom: 2rem;
+        right: 2rem;
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        background: var(--primary-gradient);
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        transition: all 0.3s ease;
+        z-index: 1000;
+    }
+
+    .create-article-btn:hover {
+        transform: scale(1.1);
+        color: white;
+    }
+
+    .empty-state {
+        text-align: center;
+        padding: 4rem 2rem;
+        background: white;
+        border-radius: 1rem;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    }
+
+    .empty-state i {
+        font-size: 4rem;
+        color: #dee2e6;
+        margin-bottom: 1.5rem;
+    }
+
+    .empty-state h3 {
+        color: #2c3e50;
+        margin-bottom: 1rem;
+    }
+
+    .empty-state p {
+        color: #6c757d;
+        margin-bottom: 2rem;
+    }
+</style>
+{% endblock %}
+
+{% block body %}
+    <div class="page-header">
+        <div class="container">
+            <h1 class="display-4 mb-3">Articles</h1>
+            <p class="lead">Découvrez nos derniers articles et partagez vos idées</p>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="row g-4">
+            {% for article in articles %}
+                <div class="col-md-6 col-lg-4">
+                    <div class="card article-card">
+                        <div class="card-img-top">
+                            <i class="fas fa-newspaper"></i>
+                        </div>
+                        <div class="card-body d-flex flex-column">
+                            <div class="article-meta">
+                                <span><i class="fas fa-user"></i> {{ article.author.email }}</span>
+                                <span><i class="fas fa-calendar"></i> {{ article.createdAt|date('d/m/Y') }}</span>
+                            </div>
+                            <h5 class="article-title">{{ article.title }}</h5>
+                            <p class="article-preview">{{ article.content|striptags|slice(0, 150) }}...</p>
+                            <div class="article-actions">
+                                <a href="{{ path('app_article_show', {'id': article.id}) }}" class="btn btn-gradient">
+                                    <i class="fas fa-eye"></i>
+                                    Lire
+                                </a>
+                                {% if is_granted('ROLE_ADMIN') or app.user == article.author %}
+                                    <a href="{{ path('app_article_edit', {'id': article.id}) }}" class="btn btn-outline-gradient">
+                                        <i class="fas fa-edit"></i>
+                                        Modifier
+                                    </a>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% else %}
+                <div class="col-12">
+                    <div class="empty-state">
+                        <i class="fas fa-newspaper"></i>
+                        <h3>Aucun article pour le moment</h3>
+                        <p>Soyez le premier à partager un article avec la communauté !</p>
+                        <a href="{{ path('app_article_new') }}" class="btn btn-gradient">
+                            <i class="fas fa-plus me-2"></i>
+                            Créer un article
+                        </a>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+
+        <a href="{{ path('app_article_new') }}" class="create-article-btn" title="Créer un nouvel article">
+            <i class="fas fa-plus"></i>
+        </a>
+    </div>
+{% endblock %}
